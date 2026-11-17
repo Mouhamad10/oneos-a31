@@ -193,6 +193,7 @@ profile_info() {
         a25) echo "SM-A256 a25x s5e8825 bar" ;;
         a33) echo "SM-A336 a33x s5e8825 bar" ;;
         a34) echo "SM-A346 a34x MT6877 bar" ;;
+        a31) echo "SM-A315F a31 MT6768 bar" ;;
         a53) echo "SM-A536 a53x s5e8825 bar" ;;
         e55) echo "SM-E556 m55xq SM7450 bar" ;;
         s-fe-9925) echo "SM-S711 r11s s5e9925 bar" ;;
