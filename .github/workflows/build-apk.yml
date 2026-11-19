@@ -39,6 +39,12 @@ jobs:
       - name: Verify core:model compiles (contains the A31 profile) + run its tests
         run: ./gradlew :core:model:test --stacktrace --no-daemon 2>&1 | tail -60
 
+      - name: Build the guest manager APK (debug) — required before :app staging
+        run: |
+          mkdir -p ../switcher/assets || true
+          bash ../scripts/build-guest-manager.sh --debug 2>&1 | tail -40
+          ls -l ../switcher/assets/guest_manager.apk 2>/dev/null || echo "guest_manager.apk NOT produced"
+
       - name: Build full debug APK
         id: apk
         continue-on-error: true
