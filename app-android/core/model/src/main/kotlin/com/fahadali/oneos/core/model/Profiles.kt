@@ -99,6 +99,7 @@ object Profiles {
     const val ID_FLIP5 = "flip5"
     const val ID_FOLD6 = "f6"
     const val ID_A07 = "a07"
+    const val ID_A31 = "a31"
     const val ID_A06 = "a06"
     const val ID_A07_5G = "a07-5g"
     const val ID_A15 = "a15"
@@ -717,6 +718,25 @@ object Profiles {
     )
 
     /**
+     * Galaxy A31 (SM-A315F), experimental: MediaTek MT6768 (Helio P65), arm64, 4 GB, bar.
+     * Same vendor API level as the A07 (31 / Android 12), which runs Infinity-X, so the vendor
+     * age is not the blocker. The open work here is the 4.14 kernel (OneOS phones run 5.x/6.x)
+     * and a guest file set built for this kernel + the Lumi vendor. The host is an Android-16 GSI,
+     * not One UI, so the compatibility gate must be relaxed for it. See docs/A31-PORT-ROADMAP.md.
+     * Untested, will most likely not start yet.
+     */
+    val A31 = PhoneProfile(
+        id = ID_A31,
+        label = "Galaxy A31",
+        modelPrefix = "SM-A315",
+        codename = "a31",
+        socModel = "MT6768",
+        form = FormFactor.BAR,
+        choices = listOf(INFINITYX_CHOICE, LINEAGE_CHOICE),
+        notes = listOf(MEDIATEK, olderVendor("31 (Android 12)", "4.14")),
+    )
+
+    /**
      * Galaxy Z Flip8, from 0.4.35: a probe report of 2026-11-01 (SM-F776B, b8s,
      * s5e9965 Exynos 2600 like the S26+ (Exynos), One UI 9.0, Android 17 build
      * CP2A.260605.016, SVE, SVE2, SME and SME2, installd 85 methods). A flip run
@@ -1302,7 +1322,7 @@ object Profiles {
     val BUILT_IN: List<PhoneProfile> = listOf(
         F8U, S_ULTRA_8850, S_ULTRA_8750, S_8750, FOLD7, S_PLUS_8750, FOLD8,
         S_8850, S_8850_JP, S_ULTRA_8650, S_8650, S_8550, S_PLUS_8550, S_PLUS_8850,
-        S_PLUS_9965, FLIP7, A56, A57, FLIP5, FOLD6, A07, FLIP8, A36, FOLD5,
+        S_PLUS_9965, FLIP7, A56, A57, FLIP5, FOLD6, A07, A31, FLIP8, A36, FOLD5,
         S_ULTRA_8550, FLIP6, S_9945, S_EDGE_8750, S_FE_9945, A26, A17, A16, S_9965, A16_4G, A16_S166, A35, A54, A27, A17_5G, FLIP7_FE,
         A06, A07_5G, A15, A24, A25, A33, A34, A53, E55, S_FE_9925, S_FE_8450, S_PLUS_9925, S_ULTRA_9925, S_ULTRA_8450,
         A55, S25_FE, S_8450, M55S, S_ULTRA_8450_JP, S_PLUS_9945, S_ULTRA_8550_JP, S_9925, A16_MTK, S_8550_JP, M35, A15_5G, S_PLUS_8650,
