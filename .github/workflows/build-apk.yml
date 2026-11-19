@@ -56,7 +56,8 @@ jobs:
           echo "=== APKs ==="
           find . -name '*.apk' -path '*outputs*' 2>/dev/null | tee ../apk-list.txt
           mkdir -p ../out
-          find . -name '*Full*ebug*.apk' -path '*outputs*' -exec cp {} ../out/ \; 2>/dev/null || true
+          find . -iname 'app-full-debug.apk' -path '*outputs*' -exec cp {} ../out/OneOS-A31-debug.apk \; 2>/dev/null || true
+          find . -iname '*full*debug*.apk' -path '*outputs*' -exec cp {} ../out/ \; 2>/dev/null || true
           ls -lh ../out/ 2>/dev/null || echo "(no apk produced)"
 
       - uses: actions/upload-artifact@v4
