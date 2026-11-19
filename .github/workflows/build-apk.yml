@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: app-android
@@ -60,11 +62,27 @@ jobs:
           find . -iname '*full*debug*.apk' -path '*outputs*' -exec cp {} ../out/ \; 2>/dev/null || true
           ls -lh ../out/ 2>/dev/null || echo "(no apk produced)"
 
+      - name: Publish APK to a GitHub Release (direct phone download)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APK=$(find . -iname 'app-full-debug.apk' -path '*outputs*' | head -1)
+          [ -n "$APK" ] || { echo "no apk to publish"; exit 0; }
+          cp "$APK" "$GITHUB_WORKSPACE/OneOS-A31-debug.apk"
+          cd "$GITHUB_WORKSPACE"
+          gh release delete oneos-a31-apk --yes --cleanup-tag 2>/dev/null || true
+          sleep 2
+          gh release create oneos-a31-apk OneOS-A31-debug.apk \
+            --title "OneOS A31 (debug test build)" \
+            --notes "Debug build of the OneOS app with the Galaxy A31 profile. Install on the A31 (allow unknown sources / debug). Experimental test build."
+          echo "=== DIRECT DOWNLOAD URL ==="
+          echo "https://github.com/${{ github.repository }}/releases/download/oneos-a31-apk/OneOS-A31-debug.apk"
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: oneos-apk
+          name: oneos-apk-log
           path: |
-            out/*.apk
             apk-build.log
             apk-list.txt
