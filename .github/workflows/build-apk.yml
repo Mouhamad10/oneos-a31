@@ -22,13 +22,16 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - uses: android-actions/setup-android@v3
-
-      - name: Install SDK packages
+      - name: Use the runner's pre-installed Android SDK + add platform 37
         run: |
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "platforms;android-37" "platforms;android-36" "build-tools;35.0.0" "platform-tools" >/dev/null 2>&1 || true
-          echo "sdk ok"
+          echo "ANDROID_HOME=$ANDROID_HOME  ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          SM="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SM" ] || SM="$(command -v sdkmanager)"
+          echo "sdkmanager: $SM"
+          yes | "$SM" --licenses >/dev/null 2>&1 || true
+          "$SM" "platforms;android-37" "build-tools;36.0.0" "platform-tools" 2>&1 | tail -5 || \
+          "$SM" "platforms;android-36" "build-tools;35.0.0" 2>&1 | tail -5 || true
+          echo "installed platforms:"; ls "$ANDROID_SDK_ROOT/platforms" 2>/dev/null
 
       - name: Gradle wrapper version
         run: ./gradlew --version || cat gradle/wrapper/gradle-wrapper.properties
