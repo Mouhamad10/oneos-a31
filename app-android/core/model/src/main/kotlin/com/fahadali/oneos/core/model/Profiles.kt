@@ -723,14 +723,15 @@ object Profiles {
      * age is not the blocker. The open work here is the 4.14 kernel (OneOS phones run 5.x/6.x)
      * and a guest file set built for this kernel + the Lumi vendor. The host is an Android-16 GSI,
      * not One UI, so the compatibility gate must be relaxed for it. See docs/A31-PORT-ROADMAP.md.
-     * Untested, will most likely not start yet.
+     * This A31 GSI spoofs its identity to the Exynos S22 (SM-S901B/r0s); only the MT6768 SoC stays real,
+     * so the match keys on that. ro.build.version.oneui reads 80000, so the host gate passes. Untested.
      */
     val A31 = PhoneProfile(
         id = ID_A31,
         label = "Galaxy A31",
-        modelPrefix = "SM-A315",
-        codename = "a31",
-        socModel = "MT6768",
+        modelPrefix = "SM-S901",
+        codename = "r0s",
+        socModel = "MT6768V/CA",
         form = FormFactor.BAR,
         choices = listOf(INFINITYX_CHOICE, LINEAGE_CHOICE),
         notes = listOf(MEDIATEK, olderVendor("31 (Android 12)", "4.14")),
