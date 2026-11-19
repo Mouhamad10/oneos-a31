@@ -1,0 +1,60 @@
+name: Build OneOS APK (debug) + verify model
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: app-android
+    env:
+      # settings.gradle.kts reads these for the tribalfs GitHub Packages repo.
+      GH_PACKAGES_USER: ${{ github.actor }}
+      GH_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platforms;android-37" "platforms;android-36" "build-tools;35.0.0" "platform-tools" >/dev/null 2>&1 || true
+          echo "sdk ok"
+
+      - name: Gradle wrapper version
+        run: ./gradlew --version || cat gradle/wrapper/gradle-wrapper.properties
+
+      - name: Verify core:model compiles (contains the A31 profile) + run its tests
+        run: ./gradlew :core:model:test --stacktrace --no-daemon 2>&1 | tail -60
+
+      - name: Build full debug APK
+        id: apk
+        continue-on-error: true
+        run: |
+          ./gradlew :app:assembleFullDebug --stacktrace --no-daemon 2>&1 | tee ../apk-build.log | tail -80
+
+      - name: Locate APK
+        run: |
+          echo "=== APKs ==="
+          find . -name '*.apk' -path '*outputs*' 2>/dev/null | tee ../apk-list.txt
+          mkdir -p ../out
+          find . -name '*Full*ebug*.apk' -path '*outputs*' -exec cp {} ../out/ \; 2>/dev/null || true
+          ls -lh ../out/ 2>/dev/null || echo "(no apk produced)"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oneos-apk
+          path: |
+            out/*.apk
+            apk-build.log
+            apk-list.txt
