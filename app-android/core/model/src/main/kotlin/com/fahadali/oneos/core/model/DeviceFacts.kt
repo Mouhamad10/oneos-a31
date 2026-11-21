@@ -58,7 +58,19 @@ data class DeviceFacts(
     val vendorModel: String = "",
 ) {
     /** A custom ROM ([CustomRomRule]): no switching, no reports. Null on stock One UI. */
-    val customRom: Finding? get() = CustomRomRule.check(CustomRomRule.Signals(model, bootloader, vendorModel, oneUiRaw))
+    val customRom: Finding?
+        get() = if (isA31GsiHost) null else CustomRomRule.check(CustomRomRule.Signals(model, bootloader, vendorModel, oneUiRaw))
+
+    /**
+     * The owner's Galaxy A31 (SM-A315) running its Android-16 GSI host, which spoofs the model to the S22
+     * (see [Profiles.A31]). The real phone shows in the MT6768 SoC and in the bootloader / vendor model, which
+     * both start with A315. Only this exact combination is exempt from [CustomRomRule]; every other port
+     * and custom ROM is still refused.
+     */
+    val isA31GsiHost: Boolean
+        get() = soc.model.startsWith("MT6768") &&
+            bootloader.trim().uppercase().startsWith("A315") &&
+            CustomRomRule.code(vendorModel).startsWith("A315")
     val oneUi: OneUiVersion? get() = OneUiVersion.parse(oneUiRaw)
     val family: ModelFamily get() = ModelFamily.of(model)
     val rootKind: RootKind get() = RootRules.kind(root)
