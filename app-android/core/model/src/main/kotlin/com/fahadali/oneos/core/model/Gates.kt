@@ -487,6 +487,14 @@ object SwitchGates {
         val have = f.androidRelease.ifEmpty { AndroidRelease.name(f.sdk) }
         return if (f.sdk in sdks) {
             Finding(ID_ANDROID, Level.OK, "Android ${AndroidRelease.name(f.sdk)}", "SDK ${f.sdk}, the same as the image.")
+        } else if (f.isA31GsiHost) {
+            // Owner's choice for the A31 GSI host: a different Android version is allowed (a warning, not a block).
+            Finding(
+                ID_ANDROID, Level.WARN, "Android version differs from the image (allowed on this A31)",
+                "This phone runs Android $have (SDK ${f.sdk}); the image is Android " +
+                    "${sdks.joinToString { AndroidRelease.name(it) }} (SDK ${sdks.joinToString()}). " +
+                    "The two systems share services, so the guest may fail to start; the stock system stays as the fallback.",
+            )
         } else if (profile != null && offered.isNotEmpty() && f.sdk < offered.first()) {
             // No system of this phone runs next to its One UI: nothing to choose, One UI has to be updated.
             block(
