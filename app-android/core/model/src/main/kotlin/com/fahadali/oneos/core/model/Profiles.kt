@@ -733,7 +733,8 @@ object Profiles {
         codename = "r0s",
         socModel = "MT6768V/CA",
         form = FormFactor.BAR,
-        choices = listOf(INFINITYX_CHOICE, LINEAGE_CHOICE),
+        // OxygenOS 16 is Android 16 (SDK 36), the same as this phone's GSI host; the Android 17 images need an SDK 37 host.
+        choices = listOf(OXYGEN16_CHOICE, INFINITYX_CHOICE, LINEAGE_CHOICE),
         notes = listOf(MEDIATEK, olderVendor("31 (Android 12)", "4.14")),
     )
 
